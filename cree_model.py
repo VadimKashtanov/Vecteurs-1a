@@ -64,5 +64,20 @@ class DraggableWidget:
     def on_drag_release(self, event):
         self.dragging = False
 
+class DraggableLabel(DraggableWidget, tk.Label): pass
+class DraggableListbox(DraggableWidget, tk.Listbox): pass
+
+root = tk.Tk()
+
+label1 = DraggableLabel(root, text="Drag me!")
+label1.pack()
+
+liste = DraggableListbox(root)
+liste.insert(1, "tanh")
+liste.insert(2, "logistique")
+liste.place(x=200, y=150)
+
+root.mainloop()
+
 if __name__ == "__main__":
 	pass
