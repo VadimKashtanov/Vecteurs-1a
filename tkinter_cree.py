@@ -26,18 +26,6 @@ class Entree(tk.Frame):
 		self.l.grid(row=0,column=0)
 		self.e.grid(row=0,column=1)
 
-class Toggle(tk.Button):
-	def __init__(self, parent, etats, *args, **kwargs):
-		tk.Button.__init__(self, parent, *args, **kwargs)
-		self.etats = etats
-		self.ETAT = -1
-		self.config(command=self.toggle)
-
-	def toggle(self):
-		self.ETAT += 1
-		self.ETAT %= len(self.etats)
-		self.config(text=self.etats[self.ETAT][0], bg=self.etats[self.ETAT][1])
-
 class DraggableFrame(tk.Frame):
 	def __init__(self, parent, x, y, module, numero, *args, **kwargs):
 		tk.Frame.__init__(self, parent.canvas, *args, **kwargs)
@@ -262,7 +250,16 @@ class DraggableApp(tk.Tk):
 
 		#	-------------------- Ordre Connections --------------
 
-		ordre_frame = tk.LabelFrame()
+		ordre_frame = tk.LabelFrame(self.frame_boutons, text='Modifier Ordre Insts')
+
+		self.ordre_de = Entree(ordre_frame, '#', '0')
+		self.ordre_a  = Entree(ordre_frame, '#', '0')
+
+		self.ordre_de.grid(row=0,column=0)
+		tk.Label(ordre_frame, text='->').grid(row=0,column=1)
+		self.ordre_a.grid(row=0,column=2)
+		tk.Button(ordre_frame, text='Changer Ordre', command=self.changer_ordre).grid(row=1,column=0,columnspan=2)
+
 		ordre_frame.pack(fill=tk.Y, expand=True)
 
 		#	-------------- Fichier Enregistrer / Ouvire -----------------
@@ -278,6 +275,18 @@ class DraggableApp(tk.Tk):
 		tk.Button(eo, text="Module -> Mdl_t", command=self.module_vers_mdl).grid(row=2, column=0)
 
 		eo.pack(fill=tk.Y, expand=True)
+
+	def changer_ordre(self):
+		de = int(self.ordre_de.val.get())
+		a  = int(self.ordre_a.val.get())
+
+		l = self.canvas.connections
+
+		l = l[:a] + [l[de]] + l[:de] + l[de+1:]
+
+		self.canvas.connections = l
+
+		self.canvas.update_lines()
 
 	def ajouter_une_connection(self):
 		iA, sA = int(self.instA.get()), int(self.sortieA.get())
